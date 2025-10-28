@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de Control MQA - Sistema Integral de Monitoreo Marino">
+    <meta name="theme-color" content="#1e40af">
+    <title>📡 Panel MQA - Sistema de Monitoreo Marino</title>
+    
+    <!-- Content Security Policy para permitir fuentes externas -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https:; font-src 'self' data: https:; img-src 'self' data: https:;">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: {
+                    'sans': ['system-ui', 'Arial', 'sans-serif']
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Animaciones personalizadas optimizadas */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes float-up {
+            0% { transform: translateY(0px); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
+        }
+        
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        @keyframes sound-wave {
+            0%, 100% { height: 8px; }
+            50% { height: 20px; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { 
+                opacity: 1;
+                box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+            }
+            50% { 
+                opacity: 0.8;
+                box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+            }
+        }
+
+        @keyframes gentle-bounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+
+        @keyframes soft-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
+        }
+
+        /* Efectos estáticos para reemplazar animaciones */
+        .static-glow {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+        
+        .static-highlight {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1));
+        }
+        
+        .static-emphasis {
+            transform: scale(1.02);
+            opacity: 0.95;
+        }
+
+        .animate-float {
+            /* Animación desactivada para evitar temblor */
+        }
+
+        .animate-float-up {
+            /* Animación desactivada para evitar temblor */
+        }
+
+        .animate-wiggle {
+            /* Animación desactivada para evitar temblor */
+        }
+
+        .animate-sound-wave {
+            /* Animación desactivada para evitar temblor */
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .animate-pulse-glow {
+            /* Animación desactivada para evitar temblor */
+        }
+
+        .animate-gentle-bounce {
+            /* Animación desactivada para evitar temblor */
+        }
+
+        .animate-soft-pulse {
+            /* Animación desactivada para evitar temblor */
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(6, 182, 212, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(6, 182, 212, 0.8);
+        }
+
+        /* Responsive design */
+        @media (max-width: 640px) {
+            .text-8xl { font-size: 4rem; }
+            .max-w-6xl { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <!-- React desde CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <script type="module">
+        const { useState, useEffect, useRef, createElement: h } = React;
+
+        // ==================== BASE DE CONOCIMIENTO COMPLETA ====================
+        const knowledgeBase = {
+            'pantalla principal': {
+                response: '🖥️ La pantalla principal es tu centro de control. Muestra 8 parámetros vitales:\n\n🌡️ Temperatura agua motor (75-90°C normal)\n🛢️ Presión aceite (40-60 psi normal)\n🌡️ Temperatura aceite (80-120°C normal)\n⚡ Voltaje batería (12V/24V según sistema)\n⏱️ Horómetro (horas totales de uso)\n🔄 RPM (revoluciones por minuto)\n🚤 Velocidad de navegación\n📊 Número de logs registrados\n\nTodos los datos se actualizan en tiempo real. ¿Necesitas información sobre algún parámetro específico?',
+                keywords: ['principal', 'inicio', 'dashboard', 'pantalla', 'home', 'menu'],
+                images: ['assets/equipos/pantallas/pantalla.jpg']
+            },
+            'iconos': {
+                response: '🎯 Los íconos son tus indicadores visuales instantáneos:\n\n🚨 ALARMA: Blanco=OK | Rojo parpadeante=CRÍTICO\n📡 GPS: Rojo=sin señal | Blanco=estable | Parpadeante=conectando\n🔇 SILENCIO: Activa/desactiva alarma sonora\n⚙️ CONFIG: Acceso a configuración\n📱 BLUETOOTH: Rojo=off | Parpadeante=emparejando | Blanco=conectado\n📶 WI-FI: Estado de conexión a internet\n🛰️ SATÉLITES: Recepción GPS activa\n☁️ NUBE: Transmisión de datos\n\n¿Qué ícono necesitas entender mejor?',
+                keywords: ['icono', 'ícono', 'símbolo', 'indicador', 'estado', 'señal']
+            },
+            'gps': {
+                response: '📍 El módulo GPS es fundamental para navegación precisa:\n\n📊 DATOS QUE MUESTRA:\n• Latitud y Longitud (coordenadas exactas)\n• Altitud sobre nivel del mar\n• Curso/rumbo de navegación\n• Velocidad actual (nudos o km/h)\n• Número de satélites (mínimo 4 recomendado)\n• Fecha y hora GPS vs RTC del panel\n\n⚙️ FUNCIÓN CLAVE:\nBotón "Actualizar RTC" sincroniza el reloj interno con GPS para registros precisos.\n\n🔧 Si ícono GPS está rojo: verifica antena, ubícate en zona despejada, espera 2-3 minutos.\n\n¿Problemas con la señal GPS?',
+                keywords: ['gps', 'ubicación', 'posición', 'coordenadas', 'satélite', 'navegación', 'latitud', 'longitud'],
+                images: ['assets/equipos/gps/FT-6.png']
+            },
+            'alarma': {
+                response: '⚠️ SISTEMA DE ALARMAS - PROTOCOLO DE EMERGENCIA:\n\n🔴 ALARMAS CRÍTICAS:\n\n1️⃣ SOBRECALENTAMIENTO:\n   • Acción: Reducir carga inmediatamente\n   • Verificar sistema refrigeración\n   • Si persiste: DETENER MOTOR\n\n2️⃣ BAJA PRESIÓN ACEITE:\n   • Acción: Detener inmediatamente\n   • Verificar nivel aceite\n   • Inspeccionar fugas\n\n3️⃣ BAJO VOLTAJE:\n   • Verificar batería\n   • Inspeccionar alternador\n   • Reducir consumo eléctrico\n\n🟠 ALARMAS PREVENTIVAS:\n• Alto consumo combustible\n• Baja señal GPS\n• Pérdida conexión Wi-Fi\n\n🔊 GESTIÓN:\n• Silenciar: Botón 🔇\n• Reconocer: Resolver causa raíz\n• Registro: Logger guarda eventos\n\n¿Qué alarma estás experimentando?',
+                keywords: ['alarma', 'alerta', 'emergencia', 'problema', 'falla', 'rojo', 'parpadeante', 'crítico'],
+                images: ['assets/equipos/alarma/alr.jpg']
+            },
+                'configuración equipos': {
+                    response: '⚙️ CONFIGURACIÓN DE EQUIPOS - PANEL MQA:\n\n🎯 EQUIPOS DISPONIBLES:\n\n📱 PANEL PRINCIPAL:\n• Pantalla táctil con 8 parámetros vitales\n• Íconos de estado en tiempo real\n• Sistema de alarmas integrado\n\n📍 MÓDULO GPS/GNSS:\n• Coordenadas precisas (Lat/Long)\n• Sincronización horaria RTC\n• Datos de navegación completos\n\n📊 SISTEMA LOGGER:\n• Registro automático de datos\n• Intervalos configurables (1-60 seg)\n• Almacenamiento local y nube\n\n📱 CONECTIVIDAD:\n• Bluetooth para móviles\n• Wi-Fi para transmisión\n• Configuración de credenciales\n\n🎛️ COMBO-BOX (1-4):\n• Selección personalizada de sensores\n• Temperaturas, presiones, flujos\n• Configuración flexible por usuario\n\n¿Qué equipo necesitas configurar?',
+                    keywords: ['configuración equipos', 'config equipos', 'equipos', 'configurar equipos', 'setup equipos'],
+                    images: ['assets/equipos/configuracion/pantalla-config-general.jpg']
+                },
+            'logger': {
+                response: '📊 DATALOGGER - Sistema de Registro:\n\n⚙️ CONFIGURACIÓN:\n\n📝 Log/Seg (Intervalo):\n• 1 seg: Diagnóstico intensivo\n• 10 seg: ⭐ Operación normal recomendada\n• 30 seg: Navegación prolongada\n• 60 seg: Trayectos largos\n\n🆔 ID Panel:\nCódigo único de identificación\nEsencial para distinguir en la nube\n\n💾 CAPACIDAD:\nAlmacenamiento local + nube\nDatos protegidos sin conectividad\n\n¿Qué intervalo necesitas?',
+                keywords: ['logger', 'registro', 'datos', 'log', 'grabación', 'almacenamiento'],
+                images: ['assets/equipos/logger/FT-7.png']
+            },
+            'bluetooth': {
+                response: '📱 CONFIGURACIÓN BLUETOOTH:\n\n🔧 PASOS:\n\n1️⃣ Ve a Config > Bluetooth\n2️⃣ Define Nombre BT (ej: Panel_MOA01)\n3️⃣ Contraseña (mínimo 6 caracteres)\n4️⃣ Guardar cambios\n5️⃣ Emparejamiento:\n   • Ícono BT parpadea\n   • Busca en tu móvil\n   • Selecciona el nombre\n   • Ingresa contraseña\n   • Ícono blanco = ✅ VINCULADO\n\n📲 USO MÓVIL:\nPermite control básico y lectura de datos\n\n¿Deseas cambiar nombre o contraseña BT?',
+                keywords: ['bluetooth', 'bt', 'emparejamiento', 'conexión', 'móvil', 'vincular'],
+                images: ['assets/equipos/bluetooth/FT-8.png']
+            },
+            'configuración': {
+                response: '⚙️ CONFIGURACIÓN GENERAL:\n\nIncluye Wi-Fi, Bluetooth, GPS, Logger y selección de sensores mediante Combo-Box.\n\nAccede con el ícono ⚙️ desde la pantalla principal.',
+                keywords: ['configuración', 'ajustes', 'settings', 'config'],
+                images: ['assets/equipos/configuracion/pantalla-config-general.jpg']
+            },
+            'wifi': {
+                response: '📶 CONEXIÓN WI-FI:\n\n🌐 PASOS:\n\n1️⃣ REQUISITOS:\n   • Router Wi-Fi activo\n   • SSID (nombre red)\n   • Contraseña\n   • Señal mínima 2 barras\n\n2️⃣ CONFIGURAR:\n   • Config > Wi-Fi\n   • Ingresa SSID exacto\n   • Ingresa contraseña\n   • Guarda y verifica ícono\n\n🧪 PRUEBA:\n   • Ícono Wi-Fi blanco = conectado\n   • Nube blanca = sincronización habilitada\n\n🔧 PROBLEMAS COMUNES:\n   • SSID mal escrito\n   • Contraseña incorrecta\n   • Señal débil\n\n¿Quieres configurar Wi-Fi ahora?',
+                keywords: ['wifi', 'wi-fi', 'internet', 'red', 'conexión', 'ssid'],
+                images: ['assets/equipos/configuracion/pantalla-config-general.jpg']
+             },
+            'combustible': {
+                response: '⛽ GESTIÓN DE COMBUSTIBLE:\n\n📊 MONITOREO:\nSensor de flujo mide consumo instantáneo (L/h)\n\n🎯 CONFIGURACIÓN:\n• Combo-Box 4: "Consumo instantáneo"\n• Pantalla muestra L/h en tiempo real\n• Logger registra histórico\n\n📈 OPTIMIZACIÓN:\n\n1️⃣ ANÁLISIS:\n   • Revisa consumo a diferentes RPM\n   • Punto óptimo: 1800-2200 RPM\n\n2️⃣ FACTORES:\n   • Velocidad navegación\n   • Carga embarcación\n   • Estado del mar\n   • Mantenimiento motor\n\n💰 IMPACTO:\nReducción 20% = Ahorro >$2,000 USD/año\n\n¿Quieres optimizar tu consumo?',
+                keywords: ['combustible', 'consumo', 'gasolina', 'diesel', 'ahorro', 'litros']
+            },
+            'temperatura': {
+                response: '🌡️ MONITOREO DE TEMPERATURAS:\n\n📊 RANGOS NORMALES:\n\n1️⃣ AGUA DEL MOTOR:\n   ✅ Normal: 75-90°C\n   ⚠️ Alerta: 90-95°C\n   🔴 Crítico: >95°C\n\n2️⃣ ACEITE DEL MOTOR:\n   ✅ Normal: 80-120°C\n   ⚠️ Alerta: 120-130°C\n   🔴 Crítico: >130°C\n\n3️⃣ GASES DE ESCAPE:\n   ✅ Normal: 300-450°C\n   ⚠️ Alerta: 450-500°C\n\n🔧 FACTORES:\n• Carga del motor\n• Velocidad navegación\n• Temperatura ambiente\n• Estado refrigeración\n\n💡 PREVENCIÓN:\nMonitorea tendencias, no solo valores puntuales\n\n¿Qué temperatura te preocupa?',
+                keywords: ['temperatura', 'calor', 'sobrecalentamiento', 'grados', 'celsius']
+            },
+            'mantenimiento': {
+                response: '🔧 MANTENIMIENTO PREDICTIVO:\n\n📅 CALENDARIO:\n\n🟢 MENSUAL:\n   • Limpieza conectores\n   • Revisión Wi-Fi/BT\n   • Inspección visual sensores\n\n🟡 TRIMESTRAL:\n   ⭐ CALIBRACIÓN OBLIGATORIA\n   • Sensores temperatura/presión\n   • Verificación GPS\n   • Limpieza profunda\n\n🟠 SEMESTRAL:\n   • Actualización firmware\n   • Revisión integral DAQ\n   • Test todos los sensores\n\n🔴 ANUAL:\n   • Auditoría completa\n   • Reemplazo componentes\n   • Certificación técnica\n\n⚠️ CORRECTIVO:\n• Sensor fuera servicio: Reemplazo inmediato\n• GPS sin señal: Verificar antena\n• Panel congelado: Reinicio\n\n¿Necesitas checklist detallado?',
+                keywords: ['mantenimiento', 'calibración', 'limpieza', 'reparación', 'servicio']
+            },
+            'sensores': {
+                response: '📡 SISTEMA DE SENSORES:\n\n🔬 TIPOS:\n\n1️⃣ TEMPERATURA (NTC):\n   • Precisión: ±0.5°C\n   • Rango: -40°C a +150°C\n\n2️⃣ PRESIÓN (Piezoresistivos):\n   • Precisión: ±2%\n   • Rango: 0-100 psi\n\n3️⃣ FLUJO COMBUSTIBLE:\n   • Precisión: ±2%\n   • Rango: 0-200 L/h\n\n4️⃣ RPM (Inductivo):\n   • Precisión: ±5 RPM\n\n5️⃣ GPS (GNSS):\n   • Precisión: ±2 metros\n   • Canales: 50+\n\n🔧 MANTENIMIENTO:\n• Calibración trimestral obligatoria\n• Solo sensores homologados\n• Documentar intervenciones\n\n¿Problemas con algún sensor?',
+                keywords: ['sensor', 'sensores', 'medición', 'instrumentación', 'calibración']
+            },
+            'configuración equipos': {
+                response: '🔧 CONFIGURACIÓN DE EQUIPOS:\n\n📋 COMBO-BOX DISPONIBLES:\n\n🔹 COMBO-BOX 1 (Temperaturas):\n   • Temp. agua de motor\n   • Temp. gases de escape\n   • Temp. aceite de caja\n   • Temp. aire de admisión\n   • Temp. descanso 01\n\n🔹 COMBO-BOX 2 (Presiones):\n   • Presión de aceite del motor\n   • Presión de admisión (turbo)\n   • Presión de aceite de caja\n\n🔹 COMBO-BOX 3 (Más Temperaturas):\n   • Temp. aceite de motor\n   • Temp. descanso 02-05\n\n🔹 COMBO-BOX 4 (Flujos):\n   • Consumo instantáneo combustible\n   • Flujo de entrada\n   • Flujo de salida\n\n⚙️ CONFIGURACIÓN:\n1. Pulse Config en pantalla principal\n2. Seleccione parámetros en cada Combo-Box\n3. Configure Wi-Fi (SSID/contraseña)\n4. Guarde cambios\n\n¿Necesitas ayuda con algún Combo-Box específico?',
+                keywords: ['configuración equipos', 'combo-box', 'combo box', 'equipos', 'configurar sensores', 'parámetros'],
+                images: ['assets/equipos/configuracion/CONFIG.jpg']
+            },
+            'combo-box': {
+                response: '📊 MENÚS COMBO-BOX:\n\n🎛️ FUNCIÓN:\nPermiten personalizar qué parámetros se muestran en la pantalla principal.\n\n📋 DISTRIBUCIÓN:\n\n🔸 COMBO-BOX 1:\n   • Temp. agua de motor\n   • Temp. gases de escape\n   • Temp. aceite de caja\n   • Temp. aire de admisión\n   • Temp. descanso 01\n\n🔸 COMBO-BOX 2:\n   • Presión aceite motor\n   • Presión admisión\n   • Presión aceite caja\n\n🔸 COMBO-BOX 3:\n   • Temp. aceite motor\n   • Temp. descanso 02-05\n\n🔸 COMBO-BOX 4:\n   • Consumo combustible (L/h)\n   • Flujo entrada/salida\n\n💡 RECOMENDACIÓN:\n• Combo 1: Temp. agua motor\n• Combo 2: Presión aceite\n• Combo 3: Temp. aceite motor\n• Combo 4: Consumo combustible\n\n¿Qué Combo-Box necesitas configurar?',
+                keywords: ['combo-box', 'combo box', 'menú desplegable', 'selección parámetros'],
+                images: ['assets/equipos/combo-box/FT-1.png', 'assets/equipos/combo-box/FT-2.png', 'assets/equipos/combo-box/FT-3.png', 'assets/equipos/combo-box/FT-4.png', 'assets/equipos/combo-box/FT-5.png']
+            },
+            'pantalla configuración': {
+                response: '⚙️ PANTALLA DE CONFIGURACIÓN:\n\n🎯 ACCESO:\nPulse el ícono ⚙️ en la pantalla principal\n\n📋 ELEMENTOS PRINCIPALES:\n\n🔹 COMBO-BOX (1-4):\n   • Asignan parámetros a pantalla principal\n   • Cada uno con opciones específicas\n\n🔹 CONEXIÓN WI-FI:\n   • Campo SSID (nombre red)\n   • Campo contraseña\n   • Permite subida automática a nube\n\n🔹 BOTONES NAVEGACIÓN:\n   • GPS: Coordenadas y sincronización\n   • Logger: Intervalos de registro\n   • Bluetooth: Emparejamiento\n   • Config: Configuración actual\n   • Inicio: Pantalla principal\n\n⚡ PROCEDIMIENTO:\n1. Seleccione sensores en Combo-Box\n2. Configure Wi-Fi si necesario\n3. Navegue a otras pantallas\n4. Confirme cambios\n\n¿Qué elemento necesitas configurar?',
+                keywords: ['pantalla configuración', 'configuración', 'config', 'configurar', 'ajustes'],
+                images: ['assets/equipos/configuracion/pantalla-config-general.jpg']
+            },
+            'logger': {
+                response: '📊 PANTALLA LOGGER:\n\n🎯 FUNCIÓN:\nConfigura el registro automático de datos\n\n⚙️ PARÁMETROS:\n\n🔹 LOG/SEG:\n   • Intervalo entre registros\n   • Ejemplos:\n     - 1 seg: Diagnóstico tiempo real\n     - 10 seg: Operación normal\n     - 30 seg: Navegación prolongada\n     - 60 seg: Ahorro memoria\n\n🔹 ID PANEL:\n   • Código único del equipo\n   • Esencial para identificación en nube\n   • Formato recomendado: MOA01, MOA02...\n\n📈 FUNCIONAMIENTO:\n• Los datos se guardan automáticamente\n• El número de logs aumenta según intervalo\n• Se suben a la nube si hay Wi-Fi\n\n⚠️ IMPORTANTE:\n• Intervalos muy cortos llenan memoria rápido\n• ID Panel debe ser único por embarcación\n• Verificar que logs aumenten correctamente\n\n¿Necesitas ayuda con algún parámetro del Logger?',
+                keywords: ['logger', 'log', 'registro', 'datos', 'intervalo', 'id panel']
+            }
+        };
+
+        // ==================== COMPONENTE PRINCIPAL ====================
+        function AquaAssist() {
+            const [messages, setMessages] = useState([]);
+            const [inputText, setInputText] = useState('');
+            const [isListening, setIsListening] = useState(false);
+            const [isSpeaking, setIsSpeaking] = useState(false);
+            const [voiceEnabled, setVoiceEnabled] = useState(true);
+            const [gpsState, setGpsState] = useState('idle');
+            const [isOnline, setIsOnline] = useState(navigator.onLine);
+            const [showImageGallery, setShowImageGallery] = useState(false);
+            const [currentImages, setCurrentImages] = useState([]);
+            const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+            const messagesEndRef = useRef(null);
+            const recognitionRef = useRef(null);
+
+            // Acciones rápidas
+            const quickActions = [
+                { icon: '🏠', text: 'Pantalla Principal', query: 'pantalla principal' },
+                { icon: '⚙️', text: 'Configuración', query: 'configuración' },
+                { icon: '🔧', text: 'Config. Equipos', query: 'configuración equipos' },
+                { icon: '📍', text: 'GPS', query: 'gps' },
+                { icon: '🚨', text: 'Alarmas', query: 'alarma' },
+                { icon: '📱', text: 'Bluetooth', query: 'bluetooth' },
+                { icon: '📶', text: 'Wi-Fi', query: 'wifi' },
+                { icon: '⛽', text: 'Combustible', query: 'combustible' },
+                { icon: '🔧', text: 'Mantenimiento', query: 'mantenimiento' }
+            ];
+
+            // Mensaje de bienvenida
+            useEffect(() => {
+                const welcomeMessage = {
+                    type: 'bot',
+                    text: '¡Hola! Soy Panel MQA 📡, tu asistente del Sistema de Monitoreo Marino.\n\nEstoy aquí para ayudarte con cualquier duda sobre:\n• Pantalla principal y parámetros\n• Configuración de sensores\n• GPS y navegación\n• Alarmas y emergencias\n• Bluetooth y Wi-Fi\n• Mantenimiento preventivo\n• Y mucho más...\n\n¿En qué puedo ayudarte hoy?',
+                    timestamp: new Date().toLocaleTimeString()
+                };
+                setMessages([welcomeMessage]);
+            }, []);
+
+            // Scroll automático
+            useEffect(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [messages]);
+
+            // Detectar estado online/offline
+            useEffect(() => {
+                const handleOnline = () => setIsOnline(true);
+                const handleOffline = () => setIsOnline(false);
+
+                window.addEventListener('online', handleOnline);
+                window.addEventListener('offline', handleOffline);
+
+                return () => {
+                    window.removeEventListener('online', handleOnline);
+                    window.removeEventListener('offline', handleOffline);
+                };
+            }, []);
+
+            // Buscar respuesta en base de conocimiento
+            const findResponse = (query) => {
+                const lowerQuery = query.toLowerCase();
+                
+                // 1) Coincidencia exacta por clave (ej: 'gps', 'bluetooth', etc.)
+                if (knowledgeBase[lowerQuery]) {
+                    const exact = knowledgeBase[lowerQuery];
+                    if (exact.images && exact.images.length > 0) {
+                        setCurrentImages(exact.images);
+                        setSelectedImageIndex(0);
+                        setShowImageGallery(true);
+                    }
+                    return exact.response;
+                }
+                
+                // 2) Búsqueda por palabras clave
+                for (const [key, value] of Object.entries(knowledgeBase)) {
+                    if (value.keywords.some(keyword => lowerQuery.includes(keyword))) {
+                        if (value.images && value.images.length > 0) {
+                            setCurrentImages(value.images);
+                            setSelectedImageIndex(0);
+                            setShowImageGallery(true);
+                        }
+                        return value.response;
+                    }
+                }
+                
+                return '🤔 Hmm, no tengo información específica sobre eso. \n\n¿Podrías reformular tu pregunta?\n\nPuedo ayudarte con:\n• Pantalla principal\n• Íconos\n• GPS\n• Configuración\n• Alarmas\n• Logger\n• Bluetooth\n• Wi-Fi\n• Combustible\n• Temperatura\n• Mantenimiento\n• Sensores\n\n💡 Tip: Usa los botones de acceso rápido para consultas comunes. 📡';
+            };
+
+            // Síntesis de voz
+            const speak = (text) => {
+                if (!voiceEnabled || !('speechSynthesis' in window)) return;
+                
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.2;
+                utterance.volume = 0.9;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const spanishVoice = voices.find(voice => 
+                    voice.lang.startsWith('es') && voice.name.includes('Google')
+                ) || voices.find(voice => voice.lang.startsWith('es'));
+                
+                if (spanishVoice) {
+                    utterance.voice = spanishVoice;
+                }
+                
+                utterance.onstart = () => {
+                    setIsSpeaking(true);
+                    setGpsState('talking');
+                };
+                
+                utterance.onend = () => {
+                    setIsSpeaking(false);
+                    setGpsState('idle');
+                };
+                
+                utterance.onerror = () => {
+                    setIsSpeaking(false);
+                    setGpsState('idle');
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            };
+
+            // Reconocimiento de voz
+            const startVoiceRecognition = () => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                
+                if (!SpeechRecognition) {
+                    alert('❌ Tu navegador no soporta reconocimiento de voz.\n\n✅ Usa Google Chrome o Microsoft Edge para esta función.');
+                    return;
+                }
+                
+                if (recognitionRef.current) {
+                    recognitionRef.current.stop();
+                }
+                
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'es-ES';
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onstart = () => {
+                    setIsListening(true);
+                    setGpsState('thinking');
+                };
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    setInputText(transcript);
+                    handleSendMessage(transcript);
+                };
+                
+                recognition.onerror = (event) => {
+                    console.error('Error reconocimiento:', event.error);
+                    setIsListening(false);
+                    setGpsState('idle');
+                    
+                    if (event.error === 'no-speech') {
+                        alert('⚠️ No detecté ninguna voz. Intenta de nuevo.');
+                    } else if (event.error === 'not-allowed') {
+                        alert('⚠️ Permiso de micrófono denegado.\n\nPor favor, permite el acceso al micrófono en la configuración de tu navegador.');
+                    }
+                };
+                
+                recognition.onend = () => {
+                    setIsListening(false);
+                    setGpsState('idle');
+                };
+                
+                recognitionRef.current = recognition;
+                recognition.start();
+            };
+
+            // Enviar mensaje
+            const handleSendMessage = (text = inputText) => {
+                if (!text.trim()) return;
+
+                const userMessage = {
+                    type: 'user',
+                    text: text,
+                    timestamp: new Date().toLocaleTimeString()
+                };
+
+                const response = findResponse(text);
+                const botMessage = {
+                    type: 'bot',
+                    text: response,
+                    timestamp: new Date().toLocaleTimeString()
+                };
+
+                setMessages(prev => [...prev, userMessage, botMessage]);
+                setInputText('');
+                speak(response);
+            };
+
+            // Acción rápida
+            const handleQuickAction = (query) => {
+                handleSendMessage(query);
+            };
+
+            // ==================== RENDER ====================
+            return h('div', { className: 'min-h-screen bg-gradient-to-br from-blue-900 via-blue-700 to-cyan-600 flex flex-col' },
+                // Header
+                h('header', { className: 'bg-blue-950 bg-opacity-90 backdrop-blur-sm text-white p-4 shadow-lg sticky top-0 z-50' },
+                    h('div', { className: 'max-w-6xl mx-auto flex items-center justify-between' },
+                        h('div', { className: 'flex items-center gap-3' },
+                            // Logo MQA
+                             h('div', { className: 'bg-white p-2 rounded-lg shadow-md' },
+                                 h('img', { 
+                                     src: 'assets/logo-mqa.png', 
+                                     width: '80', 
+                                     height: '40', 
+                                     alt: 'MQA Logo',
+                                     className: 'object-contain'
+                                 })
+                             ),
+                            h('div', { className: 'text-4xl static-glow' }, '📡'),
+                            h('div', null,
+                                h('h1', { className: 'text-2xl font-bold' }, '📡 Panel MQA'),
+                                h('p', { className: 'text-sm text-cyan-300' }, 'Sistema de Monitoreo Marino')
+                            )
+                        ),
+                        h('div', { className: 'flex gap-2 items-center' },
+                            // Logo PRO Innovate
+                             h('div', { className: 'bg-white p-2 rounded-lg shadow-md' },
+                                 h('img', { 
+                                     src: 'assets/logo-pro-innovate.png', 
+                                     width: '60', 
+                                     height: '30', 
+                                     alt: 'PRO Innovate Logo',
+                                     className: 'object-contain'
+                                 })
+                             ),
+                            !isOnline && h('div', { 
+                                className: 'bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2'
+                            },
+                                h('span', null, '📡'),
+                                h('span', null, 'Offline')
+                            ),
+                            h('button', {
+                                onClick: () => setVoiceEnabled(!voiceEnabled),
+                                className: 'p-2 bg-blue-800 rounded-lg hover:bg-blue-700 transition-colors text-xl',
+                                title: voiceEnabled ? 'Desactivar voz' : 'Activar voz'
+                            }, voiceEnabled ? '🔊' : '🔇'),
+                            h('button', {
+                                onClick: () => window.location.reload(),
+                                className: 'p-2 bg-blue-800 rounded-lg hover:bg-blue-700 transition-colors text-xl',
+                                title: 'Reiniciar'
+                            }, '🔄')
+                        )
+                    )
+                ),
+
+                // Main Content
+                h('div', { className: 'flex-1 max-w-6xl w-full mx-auto p-4 flex flex-col gap-4 overflow-hidden' },
+                    // GPS Avatar
+                    h('div', { className: 'bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-6 text-center animate-slide-up' },
+                        h('div', { className: 'relative inline-block' },
+                            h('div', {
+                                className: `text-8xl mb-2 transition-transform duration-500 ${
+                                    gpsState === 'talking' ? 'scale-105 static-emphasis' :
+                                    gpsState === 'thinking' ? 'static-highlight' :
+                                    'static-glow'
+                                }`
+                            }, '📡'),
+                            // Partículas de agua cuando habla (reducidas)
+                            isSpeaking && h('div', { className: 'absolute inset-0 pointer-events-none' },
+                                ...Array.from({length: 3}, (_, i) => 
+                                    h('div', {
+                                        key: i,
+                                        className: 'absolute text-cyan-400 opacity-60',
+                                        style: {
+                                            left: `${Math.random() * 100}%`,
+                                            top: `${Math.random() * 100}%`,
+                                            fontSize: `${Math.random() * 15 + 10}px`
+                                        }
+                                    }, '💧')
+                                )
+                            )
+                        ),
+                        h('p', { className: 'text-white text-lg font-semibold mb-2' },
+                            gpsState === 'talking' ? '🗣️ Hablando...' :
+                            gpsState === 'thinking' ? '🤔 Pensando...' :
+                            '👋 Panel MQA está listo para ayudar'
+                        ),
+                        // Barras de sonido estáticas
+                        isSpeaking && h('div', { className: 'flex justify-center gap-1 mt-2' },
+                            ...Array.from({length: 3}, (_, i) => 
+                                h('div', {
+                                    key: i,
+                                    className: 'w-2 bg-cyan-400 rounded static-glow',
+                                    style: {
+                                        height: `${(i % 2 === 0 ? 20 : 30)}px`
+                                    }
+                                })
+                            )
+                        )
+                    ),
+
+                    // Quick Actions
+                    h('div', { className: 'grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2' },
+                        ...quickActions.map((action, idx) =>
+                            h('button', {
+                                key: idx,
+                                onClick: () => handleQuickAction(action.query),
+                                className: 'bg-white bg-opacity-20 backdrop-blur-md hover:bg-opacity-30 text-white p-3 rounded-xl transition-all hover:scale-105 active:scale-95 flex flex-col items-center gap-1 shadow-lg'
+                            },
+                                h('span', { className: 'text-2xl' }, action.icon),
+                                h('span', { className: 'text-xs font-medium text-center' }, action.text)
+                            )
+                        )
+                    ),
+
+                    // Chat Messages
+                    h('div', { className: 'flex-1 bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-4 overflow-y-auto min-h-[300px] max-h-[500px]' },
+                        h('div', { className: 'space-y-4' },
+                            ...messages.map((msg, idx) =>
+                                h('div', {
+                                    key: idx,
+                                    className: `flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`
+                                },
+                                    h('div', {
+                                        className: `max-w-[80%] p-3 rounded-2xl shadow-lg ${
+                                            msg.type === 'user'
+                                                ? 'bg-cyan-500 text-white rounded-br-none'
+                                                : 'bg-white bg-opacity-95 text-gray-800 rounded-bl-none'
+                                        }`
+                                    },
+                                        h('p', { className: 'whitespace-pre-line' }, msg.text),
+                                        h('p', { className: 'text-xs opacity-70 mt-1' }, msg.timestamp)
+                                    )
+                                )
+                            ),
+                            h('div', { ref: messagesEndRef })
+                        )
+                    ),
+
+                    // Input Area
+                    h('div', { className: 'bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-4' },
+                        h('div', { className: 'flex gap-2' },
+                            h('input', {
+                                type: 'text',
+                                value: inputText,
+                                onChange: (e) => setInputText(e.target.value),
+                                onKeyPress: (e) => e.key === 'Enter' && handleSendMessage(),
+                                placeholder: 'Escribe tu pregunta aquí...',
+                                className: 'flex-1 p-3 rounded-xl bg-white bg-opacity-90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400'
+                            }),
+                            h('button', {
+                                onClick: () => handleSendMessage(),
+                                disabled: !inputText.trim(),
+                                className: 'px-6 py-3 bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-400 text-white rounded-xl transition-colors font-semibold'
+                            }, '📤'),
+                            h('button', {
+                                onClick: startVoiceRecognition,
+                                disabled: isListening,
+                                className: `px-6 py-3 rounded-xl transition-colors font-semibold ${
+                                    isListening 
+                                        ? 'bg-red-500 animate-pulse text-white' 
+                                        : 'bg-green-500 hover:bg-green-600 text-white'
+                                }`
+                            }, isListening ? '🔴' : '🎤')
+                        )
+                    ),
+
+                    // Galería de Imágenes Modal
+                    showImageGallery && h('div', {
+                        className: 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50',
+                        onClick: () => setShowImageGallery(false)
+                    },
+                        h('div', {
+                            className: 'bg-white rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-auto',
+                            onClick: (e) => e.stopPropagation()
+                        },
+                            h('div', { className: 'flex justify-between items-center mb-4' },
+                                h('h3', { className: 'text-xl font-bold text-gray-800' }, '📸 Imágenes de Referencia'),
+                                h('button', {
+                                    onClick: () => setShowImageGallery(false),
+                                    className: 'text-gray-500 hover:text-gray-700 text-2xl'
+                                }, '✕')
+                            ),
+                            
+                            // Imagen principal
+                            h('div', { className: 'mb-4' },
+                                h('img', {
+                                    src: currentImages[selectedImageIndex],
+                                    alt: `Imagen ${selectedImageIndex + 1}`,
+                                    className: 'w-full max-h-96 object-contain rounded-lg border',
+                                    onError: (e) => {
+                                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNzUgMTI1SDE3NVYxNzVIMjI1VjEyNUgxNzVaIiBmaWxsPSIjOUI5QkEwIi8+CjxwYXRoIGQ9Ik0yMDAgMTQwQzE5MS43IDE0MCA4NS4yIDE0MCA4NS4yIDE0MEM4NS4yIDE0MCA4NS4yIDE2MCA4NS4yIDE2MEM4NS4yIDE2MCA5MS43IDE2MCAyMDAgMTYwQzIwOC4zIDE2MCAyMTQuOCAxNjAgMjE0LjggMTYwQzIxNC44IDE2MCAyMTQuOCAxNDAgMjE0LjggMTQwQzIxNC44IDE0MCAyMDguMyAxNDAgMjAwIDE0MFoiIGZpbGw9IiM5QjlCQTAiLz4KPHR4dCB4PSIyMDAiIHk9IjE5MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNkI3Mjg0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZW4gbm8gZGlzcG9uaWJsZTwvdHh0Pgo8L3N2Zz4K';
+                                        e.target.alt = 'Imagen no disponible';
+                                    }
+                                })
+                            ),
+                            
+                            // Navegación de imágenes
+                            currentImages.length > 1 && h('div', { className: 'flex justify-between items-center mb-4' },
+                                h('button', {
+                                    onClick: () => setSelectedImageIndex(prev => prev > 0 ? prev - 1 : currentImages.length - 1),
+                                    className: 'px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg'
+                                }, '← Anterior'),
+                                h('span', { className: 'text-gray-600' }, 
+                                    `${selectedImageIndex + 1} de ${currentImages.length}`
+                                ),
+                                h('button', {
+                                    onClick: () => setSelectedImageIndex(prev => prev < currentImages.length - 1 ? prev + 1 : 0),
+                                    className: 'px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg'
+                                }, 'Siguiente →')
+                            ),
+                            
+                            // Miniaturas
+                            currentImages.length > 1 && h('div', { className: 'flex gap-2 overflow-x-auto' },
+                                ...currentImages.map((img, index) =>
+                                    h('img', {
+                                        key: index,
+                                        src: img,
+                                        alt: `Miniatura ${index + 1}`,
+                                        className: `w-16 h-16 object-cover rounded cursor-pointer border-2 ${
+                                            index === selectedImageIndex ? 'border-cyan-500' : 'border-gray-300'
+                                        }`,
+                                        onClick: () => setSelectedImageIndex(index),
+                                        onError: (e) => {
+                                            e.target.style.display = 'none';
+                                        }
+                                    })
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        // Renderizar la aplicación
+        ReactDOM.render(h(AquaAssist), document.getElementById('app'));
+
+        // Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('SW registrado'))
+                    .catch(error => console.log('SW falló'));
+            });
+        }
+    </script>
+</body>
+</html>

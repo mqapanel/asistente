@@ -1,0 +1,62 @@
+{
+  "name": "Panel MQA - Sistema de Monitoreo Marino",
+  "short_name": "Panel MQA",
+  "description": "Panel de Control MQA - Sistema Integral de Monitoreo Marino desarrollado por MQA Maquinaria Alemana",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1e40af",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "es",
+  "categories": ["navigation", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshot-narrow.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Pantalla Principal",
+      "short_name": "Principal",
+      "description": "Acceso directo a la pantalla principal",
+      "url": "./index.html?action=principal",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Configuración",
+      "short_name": "Config",
+      "description": "Acceso directo a configuración",
+      "url": "./index.html?action=config",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}
