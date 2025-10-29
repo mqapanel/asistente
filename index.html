@@ -202,12 +202,12 @@
             'configuración': {
                 response: '⚙️ CONFIGURACIÓN GENERAL:\n\nIncluye Wi-Fi, Bluetooth, GPS, Logger y selección de sensores mediante Combo-Box.\n\nAccede con el ícono ⚙️ desde la pantalla principal.',
                 keywords: ['configuración', 'ajustes', 'settings', 'config'],
-                images: ['assets/equipos/configuracion/pantalla-config-general.jpg']
+                images: ['assets/equipos/configuracion/CONFIG.jpg']
             },
             'wifi': {
-                response: '📶 CONEXIÓN WI-FI:\n\n🌐 PASOS:\n\n1️⃣ REQUISITOS:\n   • Router Wi-Fi activo\n   • SSID (nombre red)\n   • Contraseña\n   • Señal mínima 2 barras\n\n2️⃣ CONFIGURAR:\n   • Config > Wi-Fi\n   • Ingresa SSID exacto\n   • Ingresa contraseña\n   • Guarda y verifica ícono\n\n🧪 PRUEBA:\n   • Ícono Wi-Fi blanco = conectado\n   • Nube blanca = sincronización habilitada\n\n🔧 PROBLEMAS COMUNES:\n   • SSID mal escrito\n   • Contraseña incorrecta\n   • Señal débil\n\n¿Quieres configurar Wi-Fi ahora?',
+                response: '📶 CONEXIÓN WI-FI:\n\n🌐 PASOS:\n\n1️⃣ REQUISITOS:\n   • Router Wi-Fi activo\n   • SSID (nombre red)\n   • Contraseña\n   • Señal mínima 2 barras\n\n2️⃣ CONFIGURAR:\n   • Config > Wi-Fi\n   • Ingresa SSID exacto\n   • Ingresa contraseña\n   • Guardar\n\n3️⃣ VERIFICAR:\n   • Ícono Wi-Fi activo\n   • Conexión estable\n\n⚠️ PROBLEMAS COMUNES:\n• SSID incorrecto\n• Contraseña errónea\n• Señal débil\n• Router saturado',
                 keywords: ['wifi', 'wi-fi', 'internet', 'red', 'conexión', 'ssid'],
-                images: ['assets/equipos/configuracion/pantalla-config-general.jpg']
+                images: ['assets/equipos/configuracion/CONFIG.jpg']
              },
             'combustible': {
                 response: '⛽ GESTIÓN DE COMBUSTIBLE:\n\n📊 MONITOREO:\nSensor de flujo mide consumo instantáneo (L/h)\n\n🎯 CONFIGURACIÓN:\n• Combo-Box 4: "Consumo instantáneo"\n• Pantalla muestra L/h en tiempo real\n• Logger registra histórico\n\n📈 OPTIMIZACIÓN:\n\n1️⃣ ANÁLISIS:\n   • Revisa consumo a diferentes RPM\n   • Punto óptimo: 1800-2200 RPM\n\n2️⃣ FACTORES:\n   • Velocidad navegación\n   • Carga embarcación\n   • Estado del mar\n   • Mantenimiento motor\n\n💰 IMPACTO:\nReducción 20% = Ahorro >$2,000 USD/año\n\n¿Quieres optimizar tu consumo?',
@@ -236,9 +236,9 @@
                 images: ['assets/equipos/combo-box/FT-1.png', 'assets/equipos/combo-box/FT-2.png', 'assets/equipos/combo-box/FT-3.png', 'assets/equipos/combo-box/FT-4.png', 'assets/equipos/combo-box/FT-5.png']
             },
             'pantalla configuración': {
-                response: '⚙️ PANTALLA DE CONFIGURACIÓN:\n\n🎯 ACCESO:\nPulse el ícono ⚙️ en la pantalla principal\n\n📋 ELEMENTOS PRINCIPALES:\n\n🔹 COMBO-BOX (1-4):\n   • Asignan parámetros a pantalla principal\n   • Cada uno con opciones específicas\n\n🔹 CONEXIÓN WI-FI:\n   • Campo SSID (nombre red)\n   • Campo contraseña\n   • Permite subida automática a nube\n\n🔹 BOTONES NAVEGACIÓN:\n   • GPS: Coordenadas y sincronización\n   • Logger: Intervalos de registro\n   • Bluetooth: Emparejamiento\n   • Config: Configuración actual\n   • Inicio: Pantalla principal\n\n⚡ PROCEDIMIENTO:\n1. Seleccione sensores en Combo-Box\n2. Configure Wi-Fi si necesario\n3. Navegue a otras pantallas\n4. Confirme cambios\n\n¿Qué elemento necesitas configurar?',
+                response: '⚙️ PANTALLA DE CONFIGURACIÓN:\n\n🎯 ACCESO:\nPulse el ícono ⚙️ en la pantalla principal\n\n📋 ELEMENTOS PRINCIPALES:\n\n🔹 COMBO-BOX (1-4):\n   • Asignan parámetros a pantalla principal\n   • Cada uno con opciones específicas\n\n🔹 CONEXIÓN WI-FI:\n   • SSID: Nombre de red\n   • Password: Contraseña\n\n🔹 BOTONES NAVEGACIÓN:\n   • GPS: Configuración satelital\n   • Logger: Registro de datos\n   • Bluetooth: Conectividad móvil\n\n💡 TIP: Configura primero Wi-Fi para sincronización automática',
                 keywords: ['pantalla configuración', 'configuración', 'config', 'configurar', 'ajustes'],
-                images: ['assets/equipos/configuracion/pantalla-config-general.jpg']
+                images: ['assets/equipos/configuracion/CONFIG.jpg']
             },
             'logger': {
                 response: '📊 PANTALLA LOGGER:\n\n🎯 FUNCIÓN:\nConfigura el registro automático de datos\n\n⚙️ PARÁMETROS:\n\n🔹 LOG/SEG:\n   • Intervalo entre registros\n   • Ejemplos:\n     - 1 seg: Diagnóstico tiempo real\n     - 10 seg: Operación normal\n     - 30 seg: Navegación prolongada\n     - 60 seg: Ahorro memoria\n\n🔹 ID PANEL:\n   • Código único del equipo\n   • Esencial para identificación en nube\n   • Formato recomendado: MOA01, MOA02...\n\n📈 FUNCIONAMIENTO:\n• Los datos se guardan automáticamente\n• El número de logs aumenta según intervalo\n• Se suben a la nube si hay Wi-Fi\n\n⚠️ IMPORTANTE:\n• Intervalos muy cortos llenan memoria rápido\n• ID Panel debe ser único por embarcación\n• Verificar que logs aumenten correctamente\n\n¿Necesitas ayuda con algún parámetro del Logger?',
@@ -335,7 +335,14 @@
 
             // Síntesis de voz
             const speak = (text) => {
-                if (!voiceEnabled || !('speechSynthesis' in window)) return;
+                // Verificar si la voz está habilitada ANTES de hablar
+                if (!voiceEnabled || !('speechSynthesis' in window)) {
+                    // Si la voz está deshabilitada, cancelar cualquier síntesis en curso
+                    if ('speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                    }
+                    return;
+                }
                 
                 window.speechSynthesis.cancel();
                 
